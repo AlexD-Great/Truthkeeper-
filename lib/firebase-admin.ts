@@ -51,9 +51,21 @@ function getAdminApp(): App | null {
   }
 }
 
+let db: Firestore | null = null
+
 function getDb(): Firestore | null {
+  if (db) return db
   const app = getAdminApp()
-  return app ? getFirestore(app) : null
+  if (!app) return null
+  db = getFirestore(app)
+  try {
+    // Use the REST transport instead of gRPC. gRPC frequently hangs on Vercel's
+    // serverless cold starts (→ function timeout → 500); REST is reliable there.
+    db.settings({ preferRest: true })
+  } catch {
+    // settings() can only run once; ignore if already initialized.
+  }
+  return db
 }
 
 export function isHistoryEnabled(): boolean {
