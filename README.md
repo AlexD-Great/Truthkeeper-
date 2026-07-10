@@ -17,7 +17,7 @@ Built for **Filecoin**.
 
 ## Table of contents
 
-- [Features](#features)
+- [Features in details](#features)
 - [How it works](#how-it-works)
 - [Tech stack](#tech-stack)
 - [Architecture](#architecture)
