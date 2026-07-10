@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { CheckCircle, Clock, Share2, Archive } from "lucide-react"
@@ -41,8 +42,8 @@ export function SafetySection() {
             <p className="text-muted-foreground text-lg leading-relaxed mb-8">
               Misinformation costs lives and erodes trust. When you can prove something was verified — with a timestamp and cited sources — accountability becomes possible.
             </p>
-            <Button className="bg-red-500 hover:bg-red-600 text-white font-geist border-0">
-              Check an Article Now
+            <Button asChild className="bg-red-500 hover:bg-red-600 text-white font-geist border-0">
+              <Link href="/check">Check an Article Now</Link>
             </Button>
           </div>
 

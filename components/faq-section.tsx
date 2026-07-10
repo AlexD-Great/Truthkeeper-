@@ -5,7 +5,7 @@ export function FAQSection() {
     {
       question: "How does TruthKeeper fact-check articles?",
       answer:
-        "TruthKeeper uses an AI agent that cross-references the article text against multiple trusted knowledge bases and sources. It returns a verdict (REAL, FAKE, or UNSURE) alongside a confidence score and the specific sources used for the analysis.",
+        "TruthKeeper uses Google Gemini as its AI agent, grounded with live Google Search so it checks the article against reputable, up-to-date sources rather than stale training data. It returns a verdict (REAL, FAKE, or UNSURE) alongside a confidence score and the specific source links used for the analysis.",
     },
     {
       question: "What does the Filecoin proof contain?",
@@ -18,9 +18,9 @@ export function FAQSection() {
         "No. Once data is stored on Filecoin, it is immutable — it cannot be changed or removed by anyone, including TruthKeeper. The CID cryptographically links to the exact stored content.",
     },
     {
-      question: "Do I need an account to verify someone else's proof?",
+      question: "Do I need an account?",
       answer:
-        "No account is needed. Anyone with the Filecoin proof link (CID) can open it directly and view the complete stored proof — article, verdict, timestamp, and sources.",
+        "To verify a proof, no — anyone with the Filecoin proof link (PieceCID) can open it directly and view the complete stored proof: article, verdict, timestamp, and sources. To run your own fact-checks, you sign in with Google (free); that's what keeps your verification history private to you.",
     },
     {
       question: "What does UNSURE mean?",

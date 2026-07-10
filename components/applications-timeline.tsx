@@ -33,8 +33,9 @@ export function ApplicationsTimeline() {
       content: (
         <div>
           <p className="text-white text-sm md:text-base font-normal mb-6 leading-relaxed">
-            The AI agent cross-references the article against trusted knowledge bases and returns a verdict —
-            REAL, FAKE, or UNSURE — along with a confidence score and cited sources.
+            Google Gemini, grounded with live Google Search, checks the article against reputable,
+            up-to-date sources and returns a verdict — REAL, FAKE, or UNSURE — with a confidence
+            score and cited links.
           </p>
           <div className="space-y-3">
             <div className="flex items-center gap-3 text-red-400 text-sm">
@@ -59,7 +60,7 @@ export function ApplicationsTimeline() {
         <div>
           <p className="text-white text-sm md:text-base font-normal mb-6 leading-relaxed">
             The full proof package — article text, verdict, confidence score, sources, and timestamp — is uploaded
-            to Filecoin via Lighthouse. A unique Content Identifier (CID) is returned as your permanent proof link.
+            to Filecoin Warm Storage via the Synapse SDK. A unique PieceCID is returned as your permanent proof link.
           </p>
           <div className="space-y-3">
             <div className="flex items-center gap-3 text-red-400 text-sm">

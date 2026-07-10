@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 
 export function CTASection() {
@@ -17,23 +18,21 @@ export function CTASection() {
             TruthKeeper gives every fact-check a permanent home on Filecoin. Verify, store, and share immutable proof that cannot be deleted, altered, or denied.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="/check">
-              <Button
-                size="lg"
-                className="bg-primary text-primary-foreground hover:bg-primary/90 pulse-button text-lg px-8 py-4"
-              >
-                Check an Article Now
-              </Button>
-            </a>
-            <a href="/history">
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-primary text-primary hover:bg-primary hover:text-primary-foreground text-lg px-8 py-4 bg-transparent"
-              >
-                View Your History
-              </Button>
-            </a>
+            <Button
+              asChild
+              size="lg"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 pulse-button text-lg px-8 py-4"
+            >
+              <Link href="/check">Check an Article Now</Link>
+            </Button>
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground text-lg px-8 py-4 bg-transparent"
+            >
+              <Link href="/history">View Your History</Link>
+            </Button>
           </div>
         </div>
       </div>

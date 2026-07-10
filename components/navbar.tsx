@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Menu, X, LogIn, LogOut } from "lucide-react"
@@ -31,9 +32,9 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <h1 className="font-orbitron text-xl font-bold text-white">
+            <Link href="/" className="font-orbitron text-xl font-bold text-white">
               Truth<span className="text-red-500">Keeper</span>
-            </h1>
+            </Link>
           </div>
 
           {/* Desktop Navigation */}
@@ -73,11 +74,14 @@ export function Navbar() {
                 </Button>
               </div>
             ) : (
-              <a href="/check">
-                <Button className="gap-2 bg-red-500 hover:bg-red-600 text-white font-geist border-0">
+              <Button
+                asChild
+                className="gap-2 bg-red-500 hover:bg-red-600 text-white font-geist border-0"
+              >
+                <Link href="/check">
                   <LogIn size={16} /> Sign in
-                </Button>
-              </a>
+                </Link>
+              </Button>
             )}
           </div>
 
@@ -140,11 +144,14 @@ export function Navbar() {
                     </Button>
                   </>
                 ) : (
-                  <a href="/check" onClick={() => setIsOpen(false)}>
-                    <Button className="w-full gap-2 bg-red-500 hover:bg-red-600 text-white font-geist border-0">
+                  <Button
+                    asChild
+                    className="w-full gap-2 bg-red-500 hover:bg-red-600 text-white font-geist border-0"
+                  >
+                    <Link href="/check" onClick={() => setIsOpen(false)}>
                       <LogIn size={16} /> Sign in
-                    </Button>
-                  </a>
+                    </Link>
+                  </Button>
                 )}
               </div>
             </div>

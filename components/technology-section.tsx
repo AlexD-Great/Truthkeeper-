@@ -25,10 +25,10 @@ const filecoinBenefits = [
 ]
 
 const tools = [
-  { name: "Lighthouse", purpose: "Simple Filecoin uploads via SDK" },
-  { name: "Estuary", purpose: "Filecoin storage gateway" },
-  { name: "web3.storage", purpose: "Filecoin-compatible storage" },
-  { name: "FVM", purpose: "Optional smart contract layer" },
+  { name: "Synapse SDK", purpose: "Uploads & retrieves proofs on Filecoin" },
+  { name: "Warm Storage (PDP)", purpose: "Proof-backed, verifiable storage deals" },
+  { name: "USDFC", purpose: "Stablecoin that pays for storage" },
+  { name: "PieceCID", purpose: "Content address of each immutable proof" },
 ]
 
 export function TechnologySection() {
