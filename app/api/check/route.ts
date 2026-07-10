@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { extractArticle, looksLikeUrl } from "@/lib/article"
 import { factCheck } from "@/lib/gemini"
-import { getUserFromRequest } from "@/lib/firebase-admin"
+import { getUserFromRequest } from "@/lib/auth"
 
 export const runtime = "nodejs"
 export const maxDuration = 120

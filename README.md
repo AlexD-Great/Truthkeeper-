@@ -85,13 +85,13 @@ Built for **Filecoin**.
 - **UI:** Tailwind CSS v4, shadcn/ui, Framer Motion, react-three-fiber (landing hero)
 - **AI:** Google Gemini (`@google/genai`, model `gemini-2.5-flash`) with Google Search + URL context
 - **Storage:** Filecoin via the Synapse SDK (`@filoz/synapse-sdk`) + viem, on the Calibration testnet
-- **Auth + DB:** Firebase Authentication (Google) + Cloud Firestore (via `firebase` and `firebase-admin`)
+- **Auth + DB:** Firebase Authentication (Google) + Cloud Firestore (via the `firebase` Web SDK); server-side ID-token verification via `jose`
 
 ---
 
 ## Architecture
 
-- **Server-only libs** (`lib/gemini.ts`, `lib/synapse.ts`, `lib/firebase-admin.ts`,
+- **Server-only libs** (`lib/gemini.ts`, `lib/synapse.ts`, `lib/auth.ts`,
   `lib/article.ts`) run in the Node runtime inside API routes — secrets never reach
   the browser.
 - **API routes** are thin: authenticate, call a lib, return JSON.
@@ -100,8 +100,10 @@ Built for **Filecoin**.
   - `GET  /api/history` — auth required. The signed-in user's records.
   - `GET  /api/proof/[cid]` — **public**. Fetches a proof back from Filecoin.
 - **Auth flow:** the client signs in with Google (Firebase), attaches
-  `Authorization: Bearer <idToken>` to each request, and the server verifies it
-  with the Admin SDK. History is keyed to the verified `uid` (not client input).
+  `Authorization: Bearer <idToken>` to each request, and the server verifies the
+  token's signature against Google's public keys (`jose`), checking the issuer and
+  audience match this Firebase project. History is keyed to the verified `uid`
+  (not client input).
 - **Client** (`components/auth-provider.tsx`, `components/auth-gate.tsx`) gates
   `/check` and `/history`; the marketing landing page and proof pages stay public.
 
@@ -124,7 +126,7 @@ lib/
   gemini.ts                Two-step grounded fact-check → strict JSON
   synapse.ts               Filecoin upload/download (Synapse SDK + viem)
   article.ts               URL detection + best-effort scraping
-  firebase-admin.ts        Firestore + ID-token verification (server)
+  auth.ts                  Firebase ID-token verification (jose, server)
   firebase-client.ts       Firebase Web SDK init (client)
   types.ts                 Shared domain types
 components/
@@ -177,9 +179,9 @@ pnpm setup:payments    # one-time: deposit USDFC + approve Warm Storage
 
 - Create a Firestore database.
 - **Authentication → Sign-in method → Google → enable.**
-- Add **Admin** creds (`FIREBASE_PROJECT_ID/CLIENT_EMAIL/PRIVATE_KEY`) from a
-  service-account key.
-- Add **Web** config (`NEXT_PUBLIC_FIREBASE_*`) from your Firebase web app.
+- Add **Web** config (`NEXT_PUBLIC_FIREBASE_*`) from your Firebase web app. That's
+  all that's needed — server-side token verification uses the project's public
+  keys, so no service-account/Admin credentials are required.
 
 ### 5. Run
 
@@ -200,12 +202,9 @@ pnpm dev
 | `GEMINI_API_KEY` | ✅ | AI fact-checking |
 | `FILECOIN_PRIVATE_KEY` | ✅ | Signs Filecoin storage/payment transactions |
 | `NEXT_PUBLIC_APP_URL` | ✅ | Base URL used to build proof links |
-| `FIREBASE_PROJECT_ID` | ✅ | Admin SDK (token verification + Firestore) |
-| `FIREBASE_CLIENT_EMAIL` | ✅ | Admin SDK service account |
-| `FIREBASE_PRIVATE_KEY` | ✅ | Admin SDK service account (keep `\n` escapes) |
 | `NEXT_PUBLIC_FIREBASE_API_KEY` | ✅ | Firebase Web (Google sign-in) |
 | `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` | ✅ | Firebase Web |
-| `NEXT_PUBLIC_FIREBASE_PROJECT_ID` | ✅ | Firebase Web |
+| `NEXT_PUBLIC_FIREBASE_PROJECT_ID` | ✅ | Firebase Web + server-side ID-token verification |
 | `NEXT_PUBLIC_FIREBASE_APP_ID` | ✅ | Firebase Web |
 
 `.env.local` is git-ignored. Never commit private keys — use a throwaway testnet

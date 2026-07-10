@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { storeProof } from "@/lib/synapse"
-import { getUserFromRequest } from "@/lib/firebase-admin"
+import { getUserFromRequest } from "@/lib/auth"
 import type { FactCheckResult, ProofPackage, ProofRecord } from "@/lib/types"
 
 export const runtime = "nodejs"
