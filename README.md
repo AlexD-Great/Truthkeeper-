@@ -7,7 +7,7 @@ permanently stores the article, verdict, and timestamp on **Filecoin**. Every
 check produces a shareable proof link that **cannot be altered or deleted** —
 anyone can open it and re-verify the record straight from Filecoin.
 
-Built for **Cycle 2: Build an AI Agent That Uses Filecoin**.
+Built for **Filecoin**.
 
 - **AI agent** — Google Gemini fact-checks the article, grounded in live web search.
 - **Filecoin integration** — proofs are stored via the Synapse SDK (Calibration testnet).

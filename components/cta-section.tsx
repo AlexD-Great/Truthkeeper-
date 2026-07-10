@@ -8,7 +8,7 @@ export function CTASection() {
         <div className="slide-up">
           <div className="mb-6">
             <span className="border border-red-500/60 text-red-400 text-sm font-geist px-4 py-1.5 rounded-full tracking-widest">
-              Built on Filecoin — Cycle 2 Challenge
+              Built on Filecoin
             </span>
           </div>
           <h2 className="text-5xl font-bold text-foreground mb-6 font-orbitron text-balance">
