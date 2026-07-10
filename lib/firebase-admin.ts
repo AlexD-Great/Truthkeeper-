@@ -8,25 +8,47 @@ const COLLECTION = "proofs"
 
 let adminApp: App | null = null
 
-/** Returns the Admin app, or null if Firebase Admin isn't configured. */
+/** Normalize a service-account private key pasted into an env var. */
+function normalizePrivateKey(raw: string): string {
+  return raw
+    .trim()
+    // Strip a single layer of accidental surrounding quotes (common on Vercel).
+    .replace(/^["']|["']$/g, "")
+    // Convert \n escape sequences to real newlines.
+    .replace(/\\n/g, "\n")
+}
+
+/**
+ * Returns the Admin app, or null if Firebase Admin isn't configured OR the
+ * credentials are malformed. Never throws — a bad key must not 500 an API route.
+ */
 function getAdminApp(): App | null {
   if (adminApp) return adminApp
 
   const projectId = process.env.FIREBASE_PROJECT_ID
   const clientEmail = process.env.FIREBASE_CLIENT_EMAIL
-  // Support both literal newlines and \n-escaped keys from .env files.
-  const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n")
+  const rawKey = process.env.FIREBASE_PRIVATE_KEY
 
-  if (!projectId || !clientEmail || !privateKey) {
+  if (!projectId || !clientEmail || !rawKey) {
     return null
   }
 
-  adminApp =
-    getApps()[0] ??
-    initializeApp({
-      credential: cert({ projectId, clientEmail, privateKey }),
-    })
-  return adminApp
+  try {
+    adminApp =
+      getApps()[0] ??
+      initializeApp({
+        credential: cert({
+          projectId,
+          clientEmail,
+          privateKey: normalizePrivateKey(rawKey),
+        }),
+      })
+    return adminApp
+  } catch (e) {
+    // Malformed key / bad credentials — log and degrade gracefully to 401s.
+    console.error("[firebase-admin] initialization failed:", e)
+    return null
+  }
 }
 
 function getDb(): Firestore | null {

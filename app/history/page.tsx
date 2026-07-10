@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { VerdictBadge } from "@/components/verdict-badge"
 import { AuthGate } from "@/components/auth-gate"
 import { useAuth } from "@/components/auth-provider"
+import { apiFetch } from "@/lib/api"
 import type { ProofRecord } from "@/lib/types"
 
 export default function HistoryPage() {
@@ -28,11 +29,9 @@ function HistoryList() {
     ;(async () => {
       try {
         const token = await getToken()
-        const res = await fetch("/api/history", {
+        const data = await apiFetch<{ records: ProofRecord[] }>("/api/history", {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         })
-        const data = await res.json()
-        if (!res.ok) throw new Error(data.error || "Could not load history.")
         if (active) setRecords(data.records || [])
       } catch (e: any) {
         if (active) setError(e.message || "Could not load history.")

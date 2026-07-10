@@ -19,6 +19,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { VerdictBadge } from "@/components/verdict-badge"
 import { AuthGate } from "@/components/auth-gate"
 import { useAuth } from "@/components/auth-provider"
+import { apiFetch } from "@/lib/api"
 import type { FactCheckResult } from "@/lib/types"
 
 type Phase = "idle" | "checking" | "checked" | "storing" | "stored"
@@ -65,7 +66,7 @@ function CheckApp() {
     setStore(null)
     try {
       const token = await getToken()
-      const res = await fetch("/api/check", {
+      const data = await apiFetch<FactCheckResult>("/api/check", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -73,9 +74,7 @@ function CheckApp() {
         },
         body: JSON.stringify({ input }),
       })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || "Fact-check failed.")
-      setResult(data as FactCheckResult)
+      setResult(data)
       setPhase("checked")
     } catch (e: any) {
       toast.error(e.message || "Something went wrong.")
@@ -88,16 +87,17 @@ function CheckApp() {
     setPhase("storing")
     try {
       const token = await getToken()
-      const res = await fetch("/api/store", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      const data = await apiFetch<{ cid: string; proofUrl: string; storedAt: string }>(
+        "/api/store",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify({ result }),
         },
-        body: JSON.stringify({ result }),
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || "Failed to store proof.")
+      )
       setStore({ cid: data.cid, proofUrl: data.proofUrl, storedAt: data.storedAt })
       setPhase("stored")
       toast.success("Proof stored permanently on Filecoin.")
