@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { ArrowLeft, ExternalLink, Loader2, Inbox } from "lucide-react"
+import { ArrowLeft, ExternalLink, Loader2, Inbox, Home } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { VerdictBadge } from "@/components/verdict-badge"
 import { AuthGate } from "@/components/auth-gate"
 import { useAuth } from "@/components/auth-provider"
-import { apiFetch } from "@/lib/api"
+import { fetchUserHistory } from "@/lib/history"
 import type { ProofRecord } from "@/lib/types"
 
 export default function HistoryPage() {
@@ -19,20 +19,18 @@ export default function HistoryPage() {
 }
 
 function HistoryList() {
-  const { user, getToken } = useAuth()
+  const { user } = useAuth()
   const [loading, setLoading] = useState(true)
   const [records, setRecords] = useState<ProofRecord[]>([])
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    if (!user) return
     let active = true
     ;(async () => {
       try {
-        const token = await getToken()
-        const data = await apiFetch<{ records: ProofRecord[] }>("/api/history", {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        })
-        if (active) setRecords(data.records || [])
+        const data = await fetchUserHistory(user.uid)
+        if (active) setRecords(data)
       } catch (e: any) {
         if (active) setError(e.message || "Could not load history.")
       } finally {
@@ -47,11 +45,18 @@ function HistoryList() {
   return (
     <main className="min-h-screen bg-background px-4 pb-24 pt-28">
       <div className="mx-auto max-w-3xl">
-        <Link href="/check">
-          <Button variant="ghost" size="sm" className="mb-6 gap-2">
-            <ArrowLeft className="h-4 w-4" /> Back to Fact-Check
+        <div className="mb-6 flex items-center gap-2">
+          <Button asChild variant="ghost" size="sm" className="gap-2">
+            <Link href="/check">
+              <ArrowLeft className="h-4 w-4" /> Back to Fact-Check
+            </Link>
           </Button>
-        </Link>
+          <Button asChild variant="ghost" size="sm" className="gap-2">
+            <Link href="/">
+              <Home className="h-4 w-4" /> Home
+            </Link>
+          </Button>
+        </div>
 
         <h1 className="font-orbitron text-3xl font-bold text-foreground sm:text-4xl">
           Verification <span className="text-red-500">History</span>
@@ -77,9 +82,9 @@ function HistoryList() {
             <div className="flex flex-col items-center gap-3 rounded-2xl border border-border bg-card p-10 text-center">
               <Inbox className="h-8 w-8 text-muted-foreground" />
               <p className="font-geist text-muted-foreground">No checks yet.</p>
-              <Link href="/check">
-                <Button className="bg-red-500 text-white hover:bg-red-600">Check an article</Button>
-              </Link>
+              <Button asChild className="bg-red-500 text-white hover:bg-red-600">
+                <Link href="/check">Check an article</Link>
+              </Button>
             </div>
           )}
 

@@ -11,6 +11,7 @@ import {
   Check,
   ExternalLink,
   History,
+  Home,
   Sparkles,
   RotateCcw,
 } from "lucide-react"
@@ -20,7 +21,8 @@ import { VerdictBadge } from "@/components/verdict-badge"
 import { AuthGate } from "@/components/auth-gate"
 import { useAuth } from "@/components/auth-provider"
 import { apiFetch } from "@/lib/api"
-import type { FactCheckResult } from "@/lib/types"
+import { saveProofRecord } from "@/lib/history"
+import type { FactCheckResult, ProofRecord } from "@/lib/types"
 
 type Phase = "idle" | "checking" | "checked" | "storing" | "stored"
 
@@ -87,20 +89,30 @@ function CheckApp() {
     setPhase("storing")
     try {
       const token = await getToken()
-      const data = await apiFetch<{ cid: string; proofUrl: string; storedAt: string }>(
-        "/api/store",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          },
-          body: JSON.stringify({ result }),
+      const data = await apiFetch<{
+        cid: string
+        proofUrl: string
+        storedAt: string
+        record: ProofRecord
+      }>("/api/store", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-      )
+        body: JSON.stringify({ result }),
+      })
       setStore({ cid: data.cid, proofUrl: data.proofUrl, storedAt: data.storedAt })
       setPhase("stored")
       toast.success("Proof stored permanently on Filecoin.")
+
+      // Save to the user's history (client-side Firestore). Best-effort: the
+      // proof is already on Filecoin, so don't fail the flow if this write does.
+      try {
+        await saveProofRecord(data.record)
+      } catch (e) {
+        console.error("history save failed", e)
+      }
     } catch (e: any) {
       toast.error(e.message || "Could not store the proof.")
       setPhase("checked")
@@ -132,11 +144,18 @@ function CheckApp() {
               Verify a news article and store the proof forever on Filecoin.
             </p>
           </div>
-          <Link href="/history">
-            <Button variant="outline" size="sm" className="gap-2">
-              <History className="h-4 w-4" /> History
+          <div className="flex items-center gap-2">
+            <Button asChild variant="ghost" size="sm" className="gap-2">
+              <Link href="/">
+                <Home className="h-4 w-4" /> Home
+              </Link>
             </Button>
-          </Link>
+            <Button asChild variant="outline" size="sm" className="gap-2">
+              <Link href="/history">
+                <History className="h-4 w-4" /> History
+              </Link>
+            </Button>
+          </div>
         </div>
 
         {/* Input */}
@@ -280,20 +299,20 @@ function CheckApp() {
             </p>
 
             <div className="mt-5 flex flex-wrap gap-3">
-              <Link href={`/proof/${store.cid}`}>
-                <Button variant="outline" size="sm" className="gap-2">
+              <Button asChild variant="outline" size="sm" className="gap-2">
+                <Link href={`/proof/${store.cid}`}>
                   <ExternalLink className="h-4 w-4" /> View proof
-                </Button>
-              </Link>
-              <a
-                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(store.proofUrl)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Button variant="outline" size="sm" className="gap-2">
+                </Link>
+              </Button>
+              <Button asChild variant="outline" size="sm" className="gap-2">
+                <a
+                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(store.proofUrl)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   Share on X
-                </Button>
-              </a>
+                </a>
+              </Button>
             </div>
           </div>
         )}

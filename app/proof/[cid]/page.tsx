@@ -4,7 +4,6 @@ import { ShieldCheck, ExternalLink, ArrowLeft, Clock, FileText } from "lucide-re
 import { Button } from "@/components/ui/button"
 import { VerdictBadge } from "@/components/verdict-badge"
 import { retrieveProof } from "@/lib/synapse"
-import { getProofRecord } from "@/lib/firebase-admin"
 import type { Metadata } from "next"
 
 export const runtime = "nodejs"
@@ -39,16 +38,14 @@ export default async function ProofPage({
 
   if (!pkg && !error) notFound()
 
-  const record = pkg ? await getProofRecord(cid).catch(() => null) : null
-
   return (
     <main className="min-h-screen bg-background px-4 pb-24 pt-28">
       <div className="mx-auto max-w-3xl">
-        <Link href="/check">
-          <Button variant="ghost" size="sm" className="mb-6 gap-2">
+        <Button asChild variant="ghost" size="sm" className="mb-6 gap-2">
+          <Link href="/check">
             <ArrowLeft className="h-4 w-4" /> Check another article
-          </Button>
-        </Link>
+          </Link>
+        </Button>
 
         {error && (
           <div className="rounded-2xl border border-red-500/30 bg-red-500/5 p-6">
@@ -138,7 +135,6 @@ export default async function ProofPage({
               <p className="flex items-center gap-1.5">
                 <Clock className="h-3.5 w-3.5" />
                 Verified {new Date(pkg.timestamp).toLocaleString()}
-                {record?.storedAt && <> · stored {new Date(record.storedAt).toLocaleString()}</>}
               </p>
               <p>Model: {pkg.model}</p>
               <p className="break-all">PieceCID: <code>{cid}</code></p>

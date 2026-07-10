@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { storeProof } from "@/lib/synapse"
-import { saveProofRecord, getUserFromRequest } from "@/lib/firebase-admin"
+import { getUserFromRequest } from "@/lib/firebase-admin"
 import type { FactCheckResult, ProofPackage, ProofRecord } from "@/lib/types"
 
 export const runtime = "nodejs"
@@ -10,8 +10,9 @@ function appUrl(): string {
   return (process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000").replace(/\/$/, "")
 }
 
-// POST /api/store  { result: FactCheckResult, userId?: string }
-// Commits the fact-check package to Filecoin and records it for history.
+// POST /api/store  { result: FactCheckResult }   (requires a Firebase ID token)
+// Uploads the proof package to Filecoin and returns a history record for the
+// client to persist to Firestore (writes happen client-side under security rules).
 export async function POST(req: Request) {
   try {
     const user = await getUserFromRequest(req)
@@ -46,6 +47,8 @@ export async function POST(req: Request) {
     const proofUrl = `${appUrl()}/proof/${cid}`
     const storedAt = new Date().toISOString()
 
+    // Built server-side so userId comes from the verified token; the client
+    // persists this to Firestore (security rules enforce userId === auth.uid).
     const record: ProofRecord = {
       cid,
       proofUrl,
@@ -60,13 +63,7 @@ export async function POST(req: Request) {
       storedAt,
     }
 
-    // History is best-effort — never fail the store because Firestore is down.
-    const saved = await saveProofRecord(record).catch((e) => {
-      console.error("[/api/store] firestore save failed", e)
-      return false
-    })
-
-    return NextResponse.json({ cid, proofUrl, storedAt, historySaved: saved })
+    return NextResponse.json({ cid, proofUrl, storedAt, record })
   } catch (err: any) {
     console.error("[/api/store]", err)
     return NextResponse.json(

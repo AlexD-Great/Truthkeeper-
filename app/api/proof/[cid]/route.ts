@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server"
 import { retrieveProof } from "@/lib/synapse"
-import { getProofRecord } from "@/lib/firebase-admin"
 
 export const runtime = "nodejs"
 export const maxDuration = 120
@@ -23,13 +22,10 @@ export async function GET(
         { status: 404 },
       )
     }
-    // Attach lightweight record metadata (e.g. storedAt) if we have it.
-    const record = await getProofRecord(cid).catch(() => null)
     return NextResponse.json({
       cid,
       verifiedOnFilecoin: true,
       package: pkg,
-      storedAt: record?.storedAt ?? null,
     })
   } catch (err: any) {
     console.error("[/api/proof]", err)

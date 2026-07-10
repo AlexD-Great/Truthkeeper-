@@ -10,12 +10,12 @@ export default function PrivacyPolicy() {
       <main className="pt-20 pb-16">
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="mb-8">
-            <Link href="/">
-              <Button variant="ghost" className="text-white hover:text-red-500 hover:bg-red-500/10 font-geist">
+            <Button asChild variant="ghost" className="text-white hover:text-red-500 hover:bg-red-500/10 font-geist">
+              <Link href="/">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Home
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
 
           <h1 className="text-4xl md:text-5xl font-bold text-center mb-8 font-orbitron">Privacy Policy</h1>
