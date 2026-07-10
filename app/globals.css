@@ -157,7 +157,72 @@
     animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
+  /* Architecture diagram: animated "data flowing" down a connector */
+  .diagram-flow {
+    background-image: linear-gradient(
+      180deg,
+      transparent 0%,
+      rgba(239, 68, 68, 0.15) 20%,
+      rgba(239, 68, 68, 0.9) 50%,
+      rgba(239, 68, 68, 0.15) 80%,
+      transparent 100%
+    );
+    background-size: 100% 220%;
+    animation: dataflow 2.4s linear infinite;
+  }
+
+  .diagram-flow-h {
+    background-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(239, 68, 68, 0.15) 20%,
+      rgba(239, 68, 68, 0.9) 50%,
+      rgba(239, 68, 68, 0.15) 80%,
+      transparent 100%
+    );
+    background-size: 220% 100%;
+    animation: dataflow-h 2.4s linear infinite;
+  }
+
+  .node-pulse {
+    animation: nodePulse 2.6s ease-in-out infinite;
+  }
+
+  .grid-bg {
+    background-image: linear-gradient(rgba(239, 68, 68, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(239, 68, 68, 0.06) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+
   /* Removed explore-btn styles since the button was removed from hero */
+}
+
+@keyframes dataflow {
+  0% {
+    background-position: 0% 100%;
+  }
+  100% {
+    background-position: 0% -120%;
+  }
+}
+
+@keyframes dataflow-h {
+  0% {
+    background-position: 100% 0%;
+  }
+  100% {
+    background-position: -120% 0%;
+  }
+}
+
+@keyframes nodePulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 24px 4px rgba(239, 68, 68, 0.35);
+  }
 }
 
 @keyframes fadeIn {

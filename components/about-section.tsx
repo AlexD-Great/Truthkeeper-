@@ -1,5 +1,6 @@
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { AlertTriangle, Trash2, XCircle, Clock } from "lucide-react"
+import { AlertTriangle, Trash2, XCircle, Clock, ArrowRight } from "lucide-react"
 
 const problems = [
   {
@@ -58,8 +59,10 @@ export function AboutSection() {
             <p className="text-gray-300 text-lg leading-relaxed mb-8">
               TruthKeeper fixes this by creating a permanent, immutable record of every verification on Filecoin — so the proof outlasts any article, any platform, and any attempt to rewrite history.
             </p>
-            <Button className="bg-red-500 hover:bg-red-600 text-white font-geist border-0">
-              See the Solution
+            <Button asChild className="gap-2 bg-red-500 hover:bg-red-600 text-white font-geist border-0">
+              <Link href="/architecture">
+                See the Solution <ArrowRight className="h-4 w-4" />
+              </Link>
             </Button>
           </div>
         </div>
